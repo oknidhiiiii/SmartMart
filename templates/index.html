@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Smart Supermart</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<style>
+body {
+    font-family: 'Outfit', sans-serif;
+    margin:0;
+    background: linear-gradient(135deg, #1A1A2E, #16213E, #0F3460);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    color:#E0E0E0;
+    min-height: 100vh;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* NAVBAR */
+.navbar {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    color:white;
+    padding:15px 30px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.navbar h1 { margin: 0; font-size: 24px; font-weight: 800; background: -webkit-linear-gradient(#00ffae, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+.navbar button {
+    background:transparent;
+    border: none;
+    color: rgba(255,255,255,0.7);
+    font-size:16px;
+    font-weight: 600;
+    margin-right:20px;
+    cursor:pointer;
+    transition: 0.3s;
+    font-family: 'Outfit', sans-serif;
+}
+
+.navbar button:hover {
+    color: #00ffae;
+    text-shadow: 0 0 10px rgba(0,255,174,0.5);
+    transform: scale(1.05);
+}
+
+/* PRODUCTS */
+.products {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:25px;
+    padding:25px;
+    animation: fadeIn 0.8s ease-out;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius:20px;
+    padding:20px;
+    text-align:center;
+    color:white;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.card:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 15px 40px rgba(0,255,174,0.2);
+    border-color: rgba(0,255,174,0.3);
+}
+
+.card button {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    transition: 0.3s;
+    margin: 0 10px;
+}
+.card button:hover { background: #00ffae; color: #1A1A2E; }
+
+/* OFFERS */
+.offer-card {
+    background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding:20px;
+    border-radius:15px;
+    margin-bottom:15px;
+    color:white;
+    cursor:pointer;
+    transition:0.3s;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.offer-card b { color: #ff007f; font-size: 1.2em; }
+
+.offer-card:hover {
+    transform: scale(1.02) translateX(10px);
+    box-shadow:-10px 0 20px rgba(255,0,127,0.2);
+    border-left: 4px solid #ff007f;
+}
+
+/* CART BOX */
+.cart-box {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding:25px;
+    border-radius:20px;
+    color:white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* ORDER BUTTON */
+.order-btn {
+    width:100%;
+    padding:15px;
+    background: linear-gradient(45deg, #00ffae, #00d4ff);
+    color:#1A1A2E;
+    font-weight:800;
+    font-size: 16px;
+    border: none;
+    border-radius:12px;
+    cursor:pointer;
+    transition: 0.3s;
+    margin-top: 15px;
+    box-shadow: 0 10px 20px rgba(0, 255, 174, 0.3);
+}
+
+.order-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 25px rgba(0, 255, 174, 0.5);
+}
+
+/* SECTION */
+.section { display:none; animation: fadeIn 0.4s ease-out; }
+.active { display:block; }
+
+textarea, input {
+    width:95%;
+    padding:15px;
+    border-radius:12px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.05);
+    color: white;
+    margin-top:10px;
+    font-family: inherit;
+    transition: 0.3s;
+}
+textarea:focus, input:focus {
+    outline: none;
+    border-color: #00ffae;
+    background: rgba(255,255,255,0.1);
+}
+
+/* DASHBOARD STATS */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+.stat-box {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    backdrop-filter: blur(20px);
+    transition: 0.3s;
+}
+.stat-box:hover { transform: translateY(-5px); border-color: #00d4ff; }
+.stat-box h3 { margin: 0; font-size: 14px; color: #aaa; text-transform: uppercase; letter-spacing: 1px;}
+.stat-box p { margin: 10px 0 0 0; font-size: 28px; font-weight: 800; color: #00ffae; }
+
+/* CATEGORY FILTERS */
+.category-filters {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    scrollbar-width: thin;
+}
+.cat-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: 0.3s;
+    font-family: inherit;
+    font-weight: 600;
+}
+.cat-btn:hover, .cat-btn.active {
+    background: #00ffae;
+    color: #1A1A2E;
+    border-color: #00ffae;
+    box-shadow: 0 0 15px rgba(0,255,174,0.4);
+}
+
+.category-label {
+    width: 100%;
+    grid-column: 1 / -1;
+    font-size: 24px;
+    color: #00ffae;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 10px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+<div style="display: flex; align-items: center;">
+    <h1 style="margin-right: 40px; cursor:default;">🛍️ SmartMart</h1>
+    <button onclick="show('home')">Home</button>
+    <button onclick="show('cart')">Cart</button>
+    <button onclick="show('orders')">Orders</button>
+    <button onclick="show('analytics')">Analytics</button>
+</div>
+<div>
+    <button onclick="window.location.href='/logout'" style="margin:0; border: 1px solid rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 8px;">Logout</button>
+</div>
+</div>
+
+<!-- HOME -->
+<div id="home" class="section active">
+
+<div style="padding:20px;color:white;">
+<h2>🛍 Products</h2>
+
+<input 
+id="search"
+placeholder="🔍 Search products..."
+onkeyup="searchProducts()"
+>
+
+<div class="category-filters">
+  <button class="cat-btn active" onclick="filterCategory('All', this)">All</button>
+  <button class="cat-btn" onclick="filterCategory('Groceries', this)">Groceries</button>
+  <button class="cat-btn" onclick="filterCategory('Fruits', this)">Fruits</button>
+  <button class="cat-btn" onclick="filterCategory('Vegetables', this)">Vegetables</button>
+  <button class="cat-btn" onclick="filterCategory('Dairy & Bakery', this)">Dairy & Bakery</button>
+  <button class="cat-btn" onclick="filterCategory('Snacks & Beverages', this)">Snacks & Beverages</button>
+  <button class="cat-btn" onclick="filterCategory('Household & Care', this)">Household & Care</button>
+</div>
+
+</div>
+
+<div class="products" id="products"></div>
+
+</div>
+
+<!-- CART -->
+<div id="cart" class="section">
+<div style="padding:20px;">
+
+<h2 style="color:white;">🛒 Your Cart</h2>
+
+<h3 style="color:white;">🔥 Smart Offers</h3>
+<div id="offers"></div>
+
+<div id="cart-items" style="color:white;margin:15px 0;"></div>
+
+<div class="cart-box">
+<p><b>Total:</b> ₹<span id="total">0</span></p>
+
+<p><b>Selected Offer:</b></p>
+<p id="selected" style="color:#ffd700;"></p>
+
+<button onclick="applyOffer()" style="background:#00ffae;">
+🎯 Apply Offer
+</button>
+
+<p id="msg"></p>
+
+<h3>💰 Final Price: ₹<span id="final">0</span></h3>
+
+<p id="discount-info" style="color:#00ffae;"></p>
+</div>
+
+<textarea id="address" placeholder="Enter delivery address"></textarea>
+
+<button class="order-btn" onclick="placeOrder()">
+🚀 Place Order
+</button>
+
+<p id="order-msg" style="color:white;"></p>
+
+</div>
+</div>
+
+<!-- ORDERS -->
+<div id="orders" class="section">
+<h2 style="padding:20px;color:white;">📦 Orders</h2>
+<div id="order-list"></div>
+</div>
+
+<!-- ANALYTICS -->
+<div id="analytics" class="section">
+    <div style="padding:40px;">
+        <h2 style="color:white; font-size: 28px; margin-bottom: 20px;">🌟 Executive Dashboard</h2>
+        
+        <div class="stats-grid">
+            <div class="stat-box">
+                <h3>Total Items Sold</h3>
+                <p id="total-items-stat">0</p>
+            </div>
+            <div class="stat-box">
+                <h3>Most Popular Product</h3>
+                <p id="popular-item-stat" style="color: #00d4ff;">-</p>
+            </div>
+            <div class="stat-box">
+                <h3>Total Revenue Gen</h3>
+                <p id="revenue-stat" style="color: #ff007f;">₹0</p>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: start;">
+            <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 25px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
+                <canvas id="salesChart" height="120"></canvas>
+            </div>
+            <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 25px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
+                <canvas id="doughnutChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+const productsData = [
+  // Dairy & Bakery
+  {name: "Milk", price: 50, category: "Dairy & Bakery", img: "{{ url_for('static', filename='images/milk.png') }}"},
+  {name: "Bread", price: 40, category: "Dairy & Bakery", img: "{{ url_for('static', filename='images/bread.png') }}"},
+  {name: "Butter", price: 60, category: "Dairy & Bakery", img: "{{ url_for('static', filename='images/butter.png') }}"},
+  {name: "Eggs", price: 80, category: "Dairy & Bakery", img: "{{ url_for('static', filename='images/Eggs.png') }}"},
+  {name: "Cheese", price: 120, category: "Dairy & Bakery", img: "{{ url_for('static', filename='images/cheese.png') }}"},
+  {name: "Yogurt", price: 45, category: "Dairy & Bakery", img: "{{ url_for('static', filename='images/yogurt.png') }}"},
+  {name: "Paneer", price: 90, category: "Dairy & Bakery", img: "{{ url_for('static', filename='images/paneer.png') }}"},
+  {name: "Croissant", price: 65, category: "Dairy & Bakery", img: "{{ url_for('static', filename='images/croissant.png') }}"},
+
+  // Groceries
+  {name: "Rice", price: 100, category: "Groceries", img: "{{ url_for('static', filename='images/rice.png') }}"},
+  {name: "Sugar", price: 45, category: "Groceries", img: "{{ url_for('static', filename='images/sugar.png') }}"},
+  {name: "Wheat", price: 70, category: "Groceries", img: "{{ url_for('static', filename='images/wheat.png') }}"},
+  {name: "Turmeric", price: 90, category: "Groceries", img: "{{ url_for('static', filename='images/turmeric.png') }}"},
+  {name: "Oil", price: 150, category: "Groceries", img: "{{ url_for('static', filename='images/oil.png') }}"},
+  {name: "Salt", price: 20, category: "Groceries", img: "{{ url_for('static', filename='images/salt.png') }}"},
+  {name: "Dal", price: 110, category: "Groceries", img: "{{ url_for('static', filename='images/dal.png') }}"},
+  {name: "Spices", price: 150, category: "Groceries", img: "{{ url_for('static', filename='images/spices.png') }}"},
+  {name: "Honey", price: 200, category: "Groceries", img: "{{ url_for('static', filename='images/honey.png') }}"},
+  {name: "Ketchup", price: 85, category: "Groceries", img: "{{ url_for('static', filename='images/ketchup.png') }}"},
+  {name: "Mayonnaise", price: 95, category: "Groceries", img: "{{ url_for('static', filename='images/mayonnaise.png') }}"},
+  {name: "Vinegar", price: 50, category: "Groceries", img: "{{ url_for('static', filename='images/vinegar.png') }}"},
+  
+  // Fruits
+  {name: "Apple", price: 150, category: "Fruits", img: "{{ url_for('static', filename='images/apple.png') }}"},
+  {name: "Banana", price: 60, category: "Fruits", img: "{{ url_for('static', filename='images/banana.png') }}"},
+  {name: "Orange", price: 80, category: "Fruits", img: "{{ url_for('static', filename='images/orange.png') }}"},
+  {name: "Mango", price: 250, category: "Fruits", img: "{{ url_for('static', filename='images/mango.png') }}"},
+  {name: "Grapes", price: 120, category: "Fruits", img: "{{ url_for('static', filename='images/grapes.png') }}"},
+  {name: "Pineapple", price: 90, category: "Fruits", img: "{{ url_for('static', filename='images/pineapple.png') }}"},
+  {name: "Watermelon", price: 70, category: "Fruits", img: "{{ url_for('static', filename='images/watermelon.png') }}"},
+  {name: "Papaya", price: 65, category: "Fruits", img: "{{ url_for('static', filename='images/papaya.png') }}"},
+  {name: "Pomegranate", price: 180, category: "Fruits", img: "{{ url_for('static', filename='images/pomegranate.png') }}"},
+  {name: "Kiwi", price: 200, category: "Fruits", img: "{{ url_for('static', filename='images/kiwi.png') }}"},
+
+  // Vegetables
+  {name: "Tomato", price: 40, category: "Vegetables", img: "{{ url_for('static', filename='images/tomato.png') }}"},
+  {name: "Potato", price: 30, category: "Vegetables", img: "{{ url_for('static', filename='images/potato.png') }}"},
+  {name: "Onion", price: 35, category: "Vegetables", img: "{{ url_for('static', filename='images/onion.png') }}"},
+  {name: "Carrot", price: 50, category: "Vegetables", img: "{{ url_for('static', filename='images/carrot.png') }}"},
+  {name: "Cabbage", price: 45, category: "Vegetables", img: "{{ url_for('static', filename='images/cabbage.png') }}"},
+  {name: "Spinach", price: 30, category: "Vegetables", img: "{{ url_for('static', filename='images/spinach.png') }}"},
+  {name: "Broccoli", price: 120, category: "Vegetables", img: "{{ url_for('static', filename='images/broccoli.png') }}"},
+  {name: "Capsicum", price: 60, category: "Vegetables", img: "{{ url_for('static', filename='images/capsicum.png') }}"},
+  {name: "Garlic", price: 150, category: "Vegetables", img: "{{ url_for('static', filename='images/garlic.png') }}"},
+  {name: "Ginger", price: 100, category: "Vegetables", img: "{{ url_for('static', filename='images/ginger.png') }}"},
+
+  // Snacks & Beverages
+  {name: "Beer", price: 120, category: "Snacks & Beverages", img: "{{ url_for('static', filename='images/beer.png') }}"},
+  {name: "Chips", price: 20, category: "Snacks & Beverages", img: "{{ url_for('static', filename='images/chips.png') }}"},
+  {name: "Biscuits", price: 30, category: "Snacks & Beverages", img: "{{ url_for('static', filename='images/biscuits.png') }}"},
+  {name: "Chocolates", price: 100, category: "Snacks & Beverages", img: "{{ url_for('static', filename='images/chocolates.png') }}"},
+  {name: "Ice Cream", price: 150, category: "Snacks & Beverages", img: "{{ url_for('static', filename='images/ice cream.png') }}"},
+  {name: "Noodles", price: 45, category: "Snacks & Beverages", img: "{{ url_for('static', filename='images/noodles.png') }}"},
+  {name: "Pasta", price: 80, category: "Snacks & Beverages", img: "{{ url_for('static', filename='images/pasta.png') }}"},
+  {name: "Coffee", price: 250, category: "Snacks & Beverages", img: "{{ url_for('static', filename='images/coffee.png') }}"},
+  {name: "Tea", price: 180, category: "Snacks & Beverages", img: "{{ url_for('static', filename='images/tea.png') }}"},
+  {name: "Juice", price: 100, category: "Snacks & Beverages", img: "{{ url_for('static', filename='images/juice.png') }}"},
+  
+  // Household & Care
+  {name: "Diaper", price: 200, category: "Household & Care", img: "{{ url_for('static', filename='images/diaper.png') }}"},
+  {name: "Soap", price: 40, category: "Household & Care", img: "{{ url_for('static', filename='images/soap.png') }}"},
+  {name: "Shampoo", price: 180, category: "Household & Care", img: "{{ url_for('static', filename='images/shampoo.png') }}"},
+  {name: "Toothpaste", price: 90, category: "Household & Care", img: "{{ url_for('static', filename='images/toothpaste.png') }}"},
+  {name: "Detergent", price: 150, category: "Household & Care", img: "{{ url_for('static', filename='images/detergent.png') }}"},
+  {name: "Cleaner", price: 120, category: "Household & Care", img: "{{ url_for('static', filename='images/cleaner.png') }}"}
+];
+
+productsData.forEach(p => {
+    if(!p.img) {
+        let n = encodeURIComponent(p.name);
+        p.img = `https://ui-avatars.com/api/?name=${n}&background=random&color=fff&size=100&font-size=0.33`;
+    }
+});
+
+let combos = JSON.parse('{{ (recs | tojson | safe) if recs else "[]" }}');
+
+let cart = {};
+let selectedOffer = null;
+
+/* NAVIGATION */
+function show(id){
+document.querySelectorAll('.section').forEach(s=>s.style.display='none');
+document.getElementById(id).style.display='block';
+if(id==="orders") loadOrders();
+if(id==="cart") showOffers();
+if(id==="analytics") loadAnalytics();
+}
+
+let salesChart = null;
+let doughnutChart = null;
+
+function loadAnalytics() {
+    fetch("/api/analytics")
+    .then(r => r.json())
+    .then(data => {
+        let labels = Object.keys(data);
+        let values = Object.values(data);
+        
+        // Calculate Stats
+        let totalItems = values.reduce((a, b) => a + b, 0);
+        let maxItem = "";
+        let maxVal = -1;
+        labels.forEach(lbl => {
+            if(data[lbl] > maxVal) { maxVal = data[lbl]; maxItem = lbl; }
+        });
+        
+        let estRevenue = 0;
+        labels.forEach(lbl => {
+            let p = productsData.find(x => x.name === lbl);
+            if(p) estRevenue += (p.price * data[lbl]);
+        });
+
+        document.getElementById('total-items-stat').innerText = totalItems;
+        document.getElementById('popular-item-stat').innerText = maxItem || "-";
+        document.getElementById('revenue-stat').innerText = "₹" + estRevenue;
+
+        let ctx = document.getElementById('salesChart').getContext('2d');
+        let dCtx = document.getElementById('doughnutChart').getContext('2d');
+        
+        if (salesChart) salesChart.destroy();
+        if (doughnutChart) doughnutChart.destroy();
+
+        // Create Gradient for Bar
+        let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(0, 255, 174, 0.8)');
+        gradient.addColorStop(1, 'rgba(0, 212, 255, 0.2)');
+
+        Chart.defaults.color = '#a0a0a0';
+        Chart.defaults.font.family = 'Outfit';
+        
+        salesChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Units Sold',
+                    data: values,
+                    backgroundColor: gradient,
+                    borderRadius: 8,
+                    borderWidth: 0,
+                    hoverBackgroundColor: '#00ffae'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        padding: 12,
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 14 }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: { stepSize: 1, color: '#aaa' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#aaa' }
+                    }
+                }
+            }
+        });
+
+        doughnutChart = new Chart(dCtx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: [
+                        '#ff007f', '#00ffae', '#00d4ff', '#ffb300', '#c200ff', '#ff3d00', '#00e676', '#2979ff', '#f50057', '#d50000', '#aa00ff', '#6200ea'
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                cutout: '75%',
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, color: '#aaa' } },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        padding: 12,
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 14 },
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                let value = context.raw;
+                                let percentage = totalItems > 0 ? ((value / totalItems) * 100).toFixed(1) : 0;
+                                return ` ${label}: ${value} units (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+}
+
+let currentCategory = "All";
+
+function filterCategory(cat, btnElement) {
+    currentCategory = cat;
+    
+    // Update active class on buttons
+    document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+    if(btnElement) btnElement.classList.add('active');
+    
+    searchProducts(); // re-apply search with category filter
+}
+
+/* SEARCH */
+function searchProducts(){
+let input = document.getElementById("search").value.toLowerCase();
+let div = document.getElementById("products");
+div.innerHTML = "";
+
+let currentGroup = "";
+let matchedProducts = productsData.filter(p => {
+    let matchCat = (currentCategory === "All" || p.category === currentCategory);
+    let matchSearch = p.name.toLowerCase().includes(input);
+    return matchCat && matchSearch;
+});
+
+// Group by category if "All" is selected
+if (currentCategory === "All" && input === "") {
+    matchedProducts.sort((a,b) => a.category.localeCompare(b.category));
+}
+
+let renderedHtml = "";
+
+matchedProducts.forEach(p => {
+if (currentCategory === "All" && input === "") {
+    if(p.category !== currentGroup) {
+        currentGroup = p.category;
+        renderedHtml += `<div class="category-label">${currentGroup}</div>`;
+    }
+}
+
+let qty = cart[p.name] ? cart[p.name].qty : 0;
+
+renderedHtml += `
+<div class="card">
+<img src="${p.img}" width="100" style="border-radius:10px;"><br>
+<b>${p.name}</b><br>
+<small style="color:#aaa;">${p.category}</small><br>
+₹${p.price}<br>
+
+<div style="margin-top: 10px;">
+<button onclick="remove('${p.name}')">-</button>
+<span style="font-weight:bold; font-size: 18px; margin: 0 5px;">${qty}</span>
+<button onclick="add('${p.name}',${p.price})">+</button>
+</div>
+</div>`;
+});
+
+div.innerHTML = renderedHtml;
+}
+
+/* LOAD PRODUCTS */
+function loadProducts(){
+    searchProducts(); // reuse searchProducts to load and group by default
+}
+loadProducts();
+
+/* OFFERS */
+function showOffers(){
+let div=document.getElementById("offers");
+div.innerHTML="";
+
+combos.forEach(c=>{
+div.innerHTML+=`
+<div class="offer-card" onclick='selectOffer(${JSON.stringify(c)})'>
+<b>${c.discount}% OFF</b><br>
+Buy: ${c.items.join(", ")}<br>
+<small>Support: ${c.support}</small>
+</div>`;
+});
+}
+
+function selectOffer(c){
+selectedOffer = c;
+document.getElementById("selected").innerText =
+"🎯 " + c.items.join(", ") + " (" + c.discount + "% OFF)";
+}
+
+/* CART */
+function add(name,price){
+if(cart[name]) cart[name].qty++;
+else cart[name]={price:price, qty:1};
+render(); loadProducts();
+}
+
+function remove(name){
+if(cart[name]){
+cart[name].qty--;
+if(cart[name].qty<=0) delete cart[name];
+}
+render(); loadProducts();
+}
+
+function render(){
+let div=document.getElementById("cart-items");
+div.innerHTML="";
+let total=0;
+
+for(let i in cart){
+let d=cart[i];
+total+=d.price*d.qty;
+div.innerHTML+=`${i} x ${d.qty} = ₹${d.price*d.qty}<br>`;
+}
+
+document.getElementById("total").innerText=total;
+document.getElementById("final").innerText=total;
+}
+
+/* APPLY OFFER */
+function applyOffer(){
+if(!selectedOffer){
+document.getElementById("msg").innerText = "Select offer first!";
+return;
+}
+
+let total=0, discount=0;
+let match = selectedOffer.items.every(i=>cart[i]);
+
+for(let i in cart){
+total += cart[i].price * cart[i].qty;
+}
+
+if(match){
+selectedOffer.items.forEach(i=>{
+let item = cart[i];
+discount += item.price * item.qty * (selectedOffer.discount/100);
+});
+}
+
+let final = total - discount;
+if(final < 0) final = 0;
+
+document.getElementById("final").innerText = Math.round(final);
+
+document.getElementById("msg").innerText =
+match ? "Offer Applied!" : "Offer not applicable";
+
+document.getElementById("discount-info").innerText =
+match ? "Saved ₹" + Math.round(discount) : "";
+}
+
+/* PLACE ORDER */
+function placeOrder(){
+let address = document.getElementById("address").value;
+
+if(Object.keys(cart).length === 0){
+document.getElementById("order-msg").innerText = "Cart empty!";
+return;
+}
+
+if(address.trim() === ""){
+document.getElementById("order-msg").innerText = "Enter address!";
+return;
+}
+
+fetch("/save_order",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+items:cart,
+total:document.getElementById("final").innerText,
+address:address
+})
+})
+.then(r => r.json())
+.then(data => {
+document.getElementById("order-msg").innerText =
+"Order placed successfully!";
+
+if (data.recs) {
+combos = data.recs;
+showOffers();
+selectedOffer = null;
+document.getElementById("selected").innerText = "";
+document.getElementById("msg").innerText = "";
+document.getElementById("discount-info").innerText = "";
+}
+
+cart = {};
+render(); loadProducts();
+document.getElementById("address").value = "";
+});
+}
+
+/* ORDERS */
+function loadOrders(){
+fetch("/get_orders")
+.then(r=>r.json())
+.then(data=>{
+let div=document.getElementById("order-list");
+div.innerHTML="";
+
+data.forEach(o=>{
+let itemsStr = "";
+try {
+    let itemsObj = JSON.parse(o.items);
+    itemsStr = Object.keys(itemsObj).map(k => `${k} (x${itemsObj[k].qty})`).join(", ");
+} catch(e) {
+    itemsStr = o.items;
+}
+
+div.innerHTML+=`
+<div class="offer-card">
+Items: ${itemsStr}<br>
+Total: ₹${o.total}<br>
+Address: ${o.address}
+</div>`;
+});
+});
+}
+
+</script>
+
+</body>
+</html>
+```

@@ -1,0 +1,69 @@
+```html id="t3f2kd"
+<!DOCTYPE html>
+<html>
+<head>
+<title>Signup - Supermart</title>
+
+<style>
+body {
+    margin:0;
+    font-family:'Segoe UI';
+    background: linear-gradient(135deg,#ACB6E5,#74ebd5);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.box {
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    width:300px;
+    text-align:center;
+    box-shadow:0 5px 20px rgba(0,0,0,0.2);
+}
+
+input {
+    width:90%;
+    padding:10px;
+    margin:10px 0;
+    border-radius:8px;
+    border:1px solid #ccc;
+}
+
+button {
+    width:100%;
+    padding:10px;
+    background:#27ae60;
+    color:white;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+a {
+    color:#3498db;
+    text-decoration:none;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+<h2>📝 Signup</h2>
+
+<form method="POST" action="/signup">
+<input name="username" placeholder="Username" required>
+<input name="password" type="password" placeholder="Password" required>
+<button type="submit">Create Account</button>
+</form>
+
+<p>Already have account? <a href="/login">Login</a></p>
+</div>
+
+</body>
+</html>
+```

@@ -1,0 +1,69 @@
+```html id="m9a1zc"
+<!DOCTYPE html>
+<html>
+<head>
+<title>Login - Supermart</title>
+
+<style>
+body {
+    margin:0;
+    font-family:'Segoe UI';
+    background: linear-gradient(135deg,#74ebd5,#ACB6E5);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.box {
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    width:300px;
+    text-align:center;
+    box-shadow:0 5px 20px rgba(0,0,0,0.2);
+}
+
+input {
+    width:90%;
+    padding:10px;
+    margin:10px 0;
+    border-radius:8px;
+    border:1px solid #ccc;
+}
+
+button {
+    width:100%;
+    padding:10px;
+    background:#2c3e50;
+    color:white;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+a {
+    color:#3498db;
+    text-decoration:none;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+<h2>🔐 Login</h2>
+
+<form method="POST" action="/login">
+<input name="username" placeholder="Username" required>
+<input name="password" type="password" placeholder="Password" required>
+<button type="submit">Login</button>
+</form>
+
+<p>New user? <a href="/signup">Create account</a></p>
+</div>
+
+</body>
+</html>
+```
